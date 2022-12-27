@@ -1,0 +1,23 @@
+api:
+  id: "18392400"
+  
+httpListener:
+  port: "8081"
+  host: "0.0.0.0"
+  path: "/*"
+
+mainframe:
+  protocol: "HTTPS"
+  host: "dev-mainfrmehost.zuric.net"
+  port: "443"
+  basepath: "/mainfrme/policyCreation"
+  timeout: "60000"
+  
+  
+databaseWM:
+  host: "localhost"
+  port: "1522"
+  instance_name: "NLVCP1837D"
+  user: "SQL_WEBM_DEV"
+  database_name: "MSWEBM1DEV"
+  password : "QWERTY123Q"

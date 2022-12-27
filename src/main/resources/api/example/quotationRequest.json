@@ -1,0 +1,20 @@
+[
+  {
+    "fisrtName": "Sherlock",
+    "lastName": "Homes",
+    "dob": "21-06-1990",
+    "emailId": "Sherlock.Homes@abc.com",
+    "destination": "Singapore",
+    "departureDate": "12-12-2020",
+    "returnDate": "22-20-2022"
+  },
+  {
+    "fisrtName": "James",
+    "lastName": "Watson",
+    "dob": "21-06-1990",
+    "emailId": "James.Watson@abc.com",
+    "destination": "Singapore",
+    "departureDate": "12-12-2020",
+    "returnDate": "22-20-2022"
+  }
+]

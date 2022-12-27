@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+		<http:listener-config name="app-httpListenerConfig">
+        <http:listener-connection host="${httpListener.host}" port="${httpListener.port}" />
+    </http:listener-config>
+    <apikit:config name="app-config" api="app.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="7df04481-0988-4374-9ab8-8a9c58f5d1a0" basePath="${mainframe.basepath}">
+		<http:request-connection host="${mainframe.host}" port="${mainframe..port}" protocol="${mainframe.protocol}" connectionIdleTimeout="${mainframe.timeout}"/>
+	</http:request-config>
+	<vm:config name="VM_Config" doc:name="VM Config" doc:id="76f0b505-1a9f-4540-ba59-78bf42a69999" >
+		<vm:queues >
+			<vm:queue queueName="zh-reprocess-policy-data" />
+		</vm:queues>
+	</vm:config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="82fb1668-98a4-48aa-8028-f4739f25b575" >
+		<db:mssql-connection host="${databaseWM.host}" instanceName=" ${databaseWM.instance_name}" port="${databaseWM.port}" user="${databaseWM.user}" password="${databaseWM.password}" databaseName="${databaseWM.database_name}" />
+	</db:config>
+
+</mule>

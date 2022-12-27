@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<sub-flow name="quoteCreationSub_Flow" doc:id="c9ae8c4e-5228-44a8-a9d8-524d0b37d5f3" >
+		<logger level="INFO" doc:name="entry logger" doc:id="9f1a091d-dca5-4e29-8257-b2b930e181e7" message="payload for Quote creation :: #[payload]"/>
+		<ee:transform doc:name="storing quote payload" doc:id="bd0c0768-def3-4eea-87ce-dc2d80bea368" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<foreach doc:name="For Each" doc:id="56ceb68c-b941-4291-a4fd-dec2e35a7fd5" >
+			<set-variable value="#[payload]" doc:name="setting payload" doc:id="34416035-b3b4-45df-9c5c-1de780bec28d" variableName="recordObj"/>
+			<try doc:name="Try" doc:id="2e335c10-d7b0-42c7-aa88-0509d4898bfe" >
+				<db:insert doc:name="creating quotation in database " doc:id="c394fc7f-4bb1-4d8c-9beb-35da2702a4a2" config-ref="Database_Config">
+			<db:sql><![CDATA[INSERT INTO QUOTATION_CREATION (FirstName,LastName,DOB,EmailId,destination, DepartureDate,ReturnDate)VALUES (:firstName,:lastName,:dob,:emailId,:destination,:departureDate,:returnDate); ]]></db:sql>
+			<db:input-parameters><![CDATA[#[vars.recordObj]]]></db:input-parameters>
+		</db:insert>
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="4fda7d90-ab11-4f84-8434-1dbc8e053892" >
+						<ee:transform doc:name="error message payload" doc:id="a7dd3fcf-a82b-4820-a467-afa350cf6ece" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	operation: "Quote Creation",
+	status: "failed"
+
+}]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</foreach>
+		<ee:transform doc:name="response payload" doc:id="cac75b50-5385-46e2-8fd1-ffe5bf9063fd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="exit logger" doc:id="45ad59ef-293f-41bc-9883-4af241b99f50" message="process completed #[payload]"/>
+	</sub-flow>
+</mule>

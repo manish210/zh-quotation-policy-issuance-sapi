@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:vm="http://www.mulesoft.org/schema/mule/vm" xmlns:anypoint-mq="http://www.mulesoft.org/schema/mule/anypoint-mq"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/anypoint-mq http://www.mulesoft.org/schema/mule/anypoint-mq/current/mule-anypoint-mq.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd">
+	<sub-flow name="policyCreationSub_Flow" doc:id="2d1b60ad-7e85-4f24-808a-d2b35fe044e1" >
+		<logger level="INFO" doc:name="entry logger" doc:id="fdde85b7-6a09-4e45-8b0b-e73dadb707cd" message="Input payload for policy creation :: #[payload]"/>
+		<ee:transform doc:name="policy input payload" doc:id="49e829d5-92d2-473a-8984-f40b62f45a69" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="policyInput" ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<http:request method="POST" doc:name="call mainframe system" doc:id="c915fe3b-947a-42a8-a0ac-02576f691ad0" config-ref="HTTP_Request_configuration" path="/policy"/>
+		<choice doc:name="Choice" doc:id="0ba2aefd-38e9-45e0-aec5-496648a00995" >
+			<when expression='#[payload.message == "successful"]'>
+				<ee:transform doc:name="mainfreame response payload" doc:id="44425e8b-53e4-4896-ae4e-ad10614aef61">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+				<http:request method="POST" doc:name="calling source system" doc:id="a0ec26c6-757e-4603-aacd-cc6324bb9b94" config-ref="HTTP_Request_configuration" path="/sourceURL"/>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="reprocess data" doc:id="a06be0a7-99f5-445c-b5bf-16280795c64d" >
+					<ee:message >
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="reprocessData" ><![CDATA[ vars.policyInput
+]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<vm:publish queueName="zh-reprocess-policy-data" doc:name="reprocess queue" doc:id="7093f105-bde6-4e9c-933c-98fc0c5abdb3" sendCorrelationId="ALWAYS" config-ref="VM_Config">
+					<vm:content ><![CDATA[#[vars.reprocessData]]]></vm:content>
+				</vm:publish>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="exit logger" doc:id="2baceaec-7c2a-44f6-999f-7a1ee4d65d61" message="#[payload]"/>
+	</sub-flow>
+</mule>

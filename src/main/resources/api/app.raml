@@ -1,0 +1,58 @@
+#%RAML 1.0
+title: Mainframe-Quotation-Policy
+version: 1.0
+protocols: [ HTTPS ]
+mediaType: application/json
+
+documentation:
+  - title: Quotation creation and Issuance API
+    content: !include document/documentation.md
+
+types:
+  quotationReq : !include schema/quotationCreation.raml
+  policyCreation :  !include schema/policyCreation.raml
+
+uses:
+  traits: common/traitslibrary.raml
+
+/ping:
+  get:
+    description: Ping request flow test.
+    responses:
+      200:
+        body:
+          application/json:
+            example: !include example/pingResponse.json
+
+/quotationCreation:
+  post:
+    is: [traits.goSecure, traits.errorResponses]
+    description: create quotation for traveler in source system.
+    body:
+      application/json:
+        example: !include example/quotationRequest.json
+        type: quotationReq[]
+    responses:
+      201:
+        body:
+          example: !include example/quotationResponse.json
+            
+/policyCreation:
+  post:
+    is: [traits.goSecure, traits.errorResponses]
+    body:
+      example: !include example/policyCreation.json
+      type: policyCreation
+    responses:
+      200:
+        body:
+          example:
+            {
+              "message" : "policy created successfully"
+            }
+        
+        
+    
+          
+
+
