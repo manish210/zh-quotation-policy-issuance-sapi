@@ -17,34 +17,9 @@
 		<flow-ref doc:name="ping-sub_flow" doc:id="70bff104-e129-472e-b06b-66493a8b8ad3" name="ping-sub_flow"/>
     </flow>
     <flow name="post:\policyCreation:application\json:app-config">
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  message: "policy created successfully"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+        <flow-ref doc:name="Flow Reference" doc:id="ac3d9de5-2ff9-4cbc-ae56-cf3871f087e9" name="policyCreationSub_Flow"/>
     </flow>
     <flow name="post:\quotationCreation:application\json:app-config">
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  ploicy_quote_id: "zh-2023-001",
-  ploicy_plan_name: [
-    {
-      plan_name_1: "super-hulk-policy",
-      "plan-name_2": "danger-iron-man",
-      "plan-name_3": "smart-caption-america"
-    }
-  ]
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="quoteCreationSub_Flow" doc:id="0bdb9103-b27c-48b2-920c-2fb2ae8d6feb" name="quoteCreationSub_Flow"/>
     </flow>
 </mule>
